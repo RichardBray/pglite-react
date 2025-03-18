@@ -1,0 +1,70 @@
+import { useState } from 'react';
+import type { ChangeEvent, FormEvent } from 'react';
+import { PGlite } from '@electric-sql/pglite';
+import './App.css';
+
+interface Todo {
+  id: number;
+  text: string;
+  isCompleted: boolean;
+}
+
+function App() {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [newTodoText, setNewTodoText] = useState<string>('');
+
+  function handleInputChange(event: ChangeEvent<HTMLInputElement>): void {
+    setNewTodoText(event.target.value);
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>): void {
+    event.preventDefault();
+    
+    if (newTodoText.trim() === '') return;
+    
+    const newTodo: Todo = {
+      id: Date.now(),
+      text: newTodoText,
+      isCompleted: false
+    };
+    
+    setTodos([...todos, newTodo]);
+    setNewTodoText('');
+  }
+
+  function renderTodoList(): JSX.Element {
+    return (
+      <ul className="todo-list">
+        {todos.map((todo) => (
+          <li key={todo.id} className="todo-item">
+            {todo.text}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  return (
+    <div className="app-container">
+      <h1>React Todo List</h1>
+      
+      <form onSubmit={handleSubmit} className="todo-form">
+        <input
+          type="text"
+          value={newTodoText}
+          onChange={handleInputChange}
+          placeholder="Add a new todo"
+          className="todo-input"
+        />
+        <button type="submit" className="add-button">
+          Add
+        </button>
+      </form>
+      
+      {renderTodoList()}
+    </div>
+  );
+}
+
+export default App;
+
